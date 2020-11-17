@@ -1,3 +1,7 @@
+//DEPENDENCIES
+import Immutable from "immutable";
+import {Map} from "immutable";
+
 //DATA OBJECT
 const store = {
     name: "",
@@ -5,7 +9,9 @@ const store = {
     launch_date: "",
     landing_date: "",
     status: "",
-    photos: []
+    photos: [],
+    total_photos: "",
+    max_sol: ""
 };
 
 
@@ -33,7 +39,12 @@ const App = (state, info, photos) => {
             `
         )
     } else {
-        return `<h1>Welcome to the Mars Rover dashboard`
+        return (
+            `
+                <h1>Welcome to the Mars Rover dashboard</h1>
+                <h2>Please select a Rover</h2>
+            `
+        )
     }
 };
 
@@ -44,10 +55,12 @@ const Info = (state) => {
         <div class="info">
             <h2>${state.name}</h2>
             <ul>
-                <li class="info-item">Latest Photo Date: ${state.latestPhotoDate}</li>
+                <li class="info-item">Latest Photo Date (Earth): ${state.latestPhotoDate}</li>
+                <li class="info-item">Latest Photo Date (Sol): ${state.max_sol}</li>
+                <li class="info-item">Total photos taken: ${state.total_photos}</li>
                 <li class="info-item">Launch Date: ${state.launch_date}</li>
                 <li class="info-item">Landing Date: ${state.landing_date}</li>
-                <li class="info-item">Status: ${state.status}</li>
+                <li class="info-item ${state.status === "active" ? "active" : "complete"}">Status: ${state.status}</li>
             </ul>
         </div>
     `)
@@ -60,7 +73,7 @@ const Photos = (state) => {
         <div class="photos">
             ${state.photos.map(photo => {
                 return `
-                    <img class="photo-pic" src=${photo}>
+                    <img class="photo-pic" src=${photo.img_src}>
                 `
             }).join("")}
         </div>
@@ -74,12 +87,7 @@ const eventListeners = () => {
     document.querySelector(".Curiosity").addEventListener("click", (e) => {
         console.log("You clicked me");
         const newData = {
-            name: "Curiosity",
-            // latestPhotoDate: "17-11-2020",
-            // launchDate: "20-12-2010",
-            // landingDate: "20-01-2011",
-            // status: "Active",
-            // photos: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1SqrBHzWoPE6n8P0_WP-PCqjD1J8z97A_ng&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpSwyLLNVcKnRibjV9RljP2dKHwirqRCqYGw&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw3BxQgdMOWzaoAj8RGF7X3sakQiiEjUlHAw&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC9pJB1Hy2liZmqHignhfG5XOzNd4D0i2Yug&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThxX7_vVzY8LpIGxGnoy0ue-c_jgMuJXXgrQ&usqp=CAU"]
+            name: "Curiosity"
         }
     
         updateStore(store, newData);
@@ -91,12 +99,7 @@ const eventListeners = () => {
     document.querySelector(".Spirit").addEventListener("click", (e) => {
         console.log("You clicked me");
         const newData = {
-            name: "Spirit",
-            // latestPhotoDate: "13-9-2019",
-            // launchDate: "20-12-2009",
-            // landingDate: "20-01-2009",
-            // status: "Complete",
-            // photos: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1SqrBHzWoPE6n8P0_WP-PCqjD1J8z97A_ng&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpSwyLLNVcKnRibjV9RljP2dKHwirqRCqYGw&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw3BxQgdMOWzaoAj8RGF7X3sakQiiEjUlHAw&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC9pJB1Hy2liZmqHignhfG5XOzNd4D0i2Yug&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThxX7_vVzY8LpIGxGnoy0ue-c_jgMuJXXgrQ&usqp=CAU"]
+            name: "Spirit"
         }
     
         updateStore(store, newData);
@@ -109,12 +112,7 @@ const eventListeners = () => {
     document.querySelector(".Opportunity").addEventListener("click", (e) => {
         console.log("You clicked me");
         const newData = {
-            name: "Opportunity",
-            // latestPhotoDate: "12-10-2020",
-            // launchDate: "20-12-2009",
-            // landingDate: "20-01-2009",
-            // status: "Active",
-            // photos: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1SqrBHzWoPE6n8P0_WP-PCqjD1J8z97A_ng&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpSwyLLNVcKnRibjV9RljP2dKHwirqRCqYGw&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw3BxQgdMOWzaoAj8RGF7X3sakQiiEjUlHAw&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC9pJB1Hy2liZmqHignhfG5XOzNd4D0i2Yug&usqp=CAU", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThxX7_vVzY8LpIGxGnoy0ue-c_jgMuJXXgrQ&usqp=CAU"]
+            name: "Opportunity"
         }
     
         updateStore(store, newData);
@@ -127,11 +125,20 @@ const eventListeners = () => {
 
 //API CALLS
 const getInfo = async (rover) => {
+    //Save result of api call to result variable
     const result = await fetch(`http://localhost:3000/info?rover=${rover}`)
     .then(res => res.json())
 
-    console.log(result.result);
-    updateStore(store, result.result.photo_manifest);
+    //Update store with photo_manifest info
+    updateStore(store, result.res1.photo_manifest);
+    //Update store again with latest photos
+    updateStore(store, {photos: result.res2.photos});
+    //Update store once more with latest photo date
+    updateStore(store, {latestPhotoDate: result.date});
+
+    console.log(result);
+    // console.log(store);
+    //Render data
     render(App);
 };
 
