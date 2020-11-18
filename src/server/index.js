@@ -19,10 +19,8 @@ app.get("/info", async (req, res) => {
     let result = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/${req.query.rover.toLowerCase()}?&api_key=${process.env.API_KEY}`)
     .then(res => res.json())
 
-    //When result is recieved save photos array to variable
-    const photoArr = await result.photo_manifest.photos;
-    //Get array for the most recent photos
-    const date = await photoArr[photoArr.length - 1].earth_date;
+    //Get latest photo date
+    const date = await result.photo_manifest.max_date;
     
     //Make second API call to find photos for the selected Rover with the latest date stored in the variable above
     let result2 = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${req.query.rover}/photos?earth_date=${date}&api_key=${process.env.API_KEY}`)

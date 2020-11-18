@@ -35,6 +35,31 @@ body {
     cursor: pointer;
 }
 
+/* WELCOME SCREEN */
+.welcome {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: url("https://images.unsplash.com/photo-1538551868183-edf7bfc50391?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60");
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 3rem;
+    text-align: center;
+}
+
+.welcome h1 {
+    padding-top: 10rem;
+    font-size: 5rem;
+    margin-bottom: 2rem;
+}
+
+.welcome h2 {
+    font-size: 3rem;
+
+}
+
 /* INFO SECTION */
 .info {
     padding: 3rem;

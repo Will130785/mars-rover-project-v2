@@ -1,7 +1,3 @@
-//DEPENDENCIES
-import Immutable from "immutable";
-import {Map} from "immutable";
-
 //DATA OBJECT
 const store = {
     name: "",
@@ -41,8 +37,10 @@ const App = (state, info, photos) => {
     } else {
         return (
             `
-                <h1>Welcome to the Mars Rover dashboard</h1>
-                <h2>Please select a Rover</h2>
+                <div class="welcome">
+                    <h1>Welcome to the Mars Rover dashboard</h1>
+                    <h2>Please select a Rover to view its latest photos and data</h2>
+                </div>
             `
         )
     }
@@ -85,41 +83,32 @@ const Photos = (state) => {
 //EVENT LISTENERS
 const eventListeners = () => {
     document.querySelector(".Curiosity").addEventListener("click", (e) => {
-        console.log("You clicked me");
         const newData = {
             name: "Curiosity"
         }
     
         updateStore(store, newData);
-        console.log(store);
         getInfo(store.name);
-        // render(App);
     });
 
     document.querySelector(".Spirit").addEventListener("click", (e) => {
-        console.log("You clicked me");
         const newData = {
             name: "Spirit"
         }
     
         updateStore(store, newData);
-        console.log(store);
         getInfo(store.name);
-    
-        // render(App);
+
     });
 
     document.querySelector(".Opportunity").addEventListener("click", (e) => {
-        console.log("You clicked me");
         const newData = {
             name: "Opportunity"
         }
     
         updateStore(store, newData);
-        console.log(store);
         getInfo(store.name);
-    
-        // render(App);
+
     });
 }
 
@@ -136,13 +125,10 @@ const getInfo = async (rover) => {
     //Update store once more with latest photo date
     updateStore(store, {latestPhotoDate: result.date});
 
-    console.log(result);
-    // console.log(store);
     //Render data
     render(App);
 };
 
-// getInfo();
 //Initiate event listeners
 eventListeners();
 render(App);
