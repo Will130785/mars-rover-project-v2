@@ -1,37 +1,28 @@
-//DATA OBJECT
-const store = {
-    name: "",
-    latestPhotoDate: "",
-    launch_date: "",
-    landing_date: "",
-    status: "",
-    photos: [],
-    total_photos: "",
-    max_sol: ""
-};
-
-
+//DATA STORES
+//Initiate store and photoObj variables to empty strings, these will be replaced by immutable objects upon page load
+let store = "";
+let photoObj = "";
 
 //RENDER
-const render = component => {
+const render = (component, rover) => {
     const root = document.getElementById("root");
 
-    root.innerHTML = component(store, Info, Photos);
-};
-
-//UPDATE STORE
-const updateStore = (store, newState ) => {
-    store = Object.assign(store, newState)
+    root.innerHTML = component(Info, Photos, rover);
 };
 
 //APP COMPONENT
-const App = (state, info, photos) => {
+const App = (info, photos, rover) => {
 
-    if(state.name) {
+    //Check that store exists, if not render the welcome screen or if so render info and photo components
+    if(store) {
+        //Get rover and photo data
+        const data = store.get(rover);
+        const photoData = photoObj.get(rover)
         return (
-            `
-                ${info(state)}
-                ${photos(state)}
+            `   <div>
+                    ${info()(data)}
+                    ${photos()(photoData)}
+                </div>
             `
         )
     } else {
@@ -47,67 +38,59 @@ const App = (state, info, photos) => {
 };
 
 //INFO COMPONENT
-const Info = (state) => {
+const Info = () => {
 
-    return (`
+    return (data) => {
+        return (`
         <div class="info">
-            <h2>${state.name}</h2>
+            <h2>${data.photo_manifest.name}</h2>
             <ul>
-                <li class="info-item">Latest Photo Date (Earth): ${state.latestPhotoDate}</li>
-                <li class="info-item">Latest Photo Date (Sol): ${state.max_sol}</li>
-                <li class="info-item">Total photos taken: ${state.total_photos}</li>
-                <li class="info-item">Launch Date: ${state.launch_date}</li>
-                <li class="info-item">Landing Date: ${state.landing_date}</li>
-                <li class="info-item ${state.status === "active" ? "active" : "complete"}">Status: ${state.status}</li>
+                <li class="info-item">Latest Photo Date (Earth): ${data.photo_manifest.max_date}</li>
+                <li class="info-item">Latest Photo Date (Sol): ${data.photo_manifest.max_sol}</li>
+                <li class="info-item">Total photos taken: ${data.photo_manifest.total_photos}</li>
+                <li class="info-item">Launch Date: ${data.photo_manifest.launch_date}</li>
+                <li class="info-item">Landing Date: ${data.photo_manifest.landing_date}</li>
+                <li class="info-item ${data.photo_manifest.status === "active" ? "active" : "complete"}">Status: ${data.photo_manifest.status}</li>
             </ul>
         </div>
     `)
+
+    }
+
 };
 
 //PHOTOS COMPONENT
-const Photos = (state) => {
+const Photos = () => {
+  
+  return (data) => {
 
-    return (`
+        return (`
         <div class="photos">
-            ${state.photos.map(photo => {
+            ${data.latest_photos.map(photo => {
                 return `
                     <img class="photo-pic" src=${photo.img_src}>
                 `
             }).join("")}
         </div>
     `)
-};
+    }
 
+};
 
 
 //EVENT LISTENERS
 const eventListeners = () => {
     document.querySelector(".Curiosity").addEventListener("click", (e) => {
-        const newData = {
-            name: "Curiosity"
-        }
-    
-        updateStore(store, newData);
-        getInfo(store.name);
+        render(App, "curiosity");
     });
 
     document.querySelector(".Spirit").addEventListener("click", (e) => {
-        const newData = {
-            name: "Spirit"
-        }
-    
-        updateStore(store, newData);
-        getInfo(store.name);
+        render(App, "spirit")
 
     });
 
     document.querySelector(".Opportunity").addEventListener("click", (e) => {
-        const newData = {
-            name: "Opportunity"
-        }
-    
-        updateStore(store, newData);
-        getInfo(store.name);
+        render(App, "opportunity");
 
     });
 }
@@ -118,17 +101,32 @@ const getInfo = async (rover) => {
     const result = await fetch(`http://localhost:3000/info?rover=${rover}`)
     .then(res => res.json())
 
-    //Update store with photo_manifest info
-    updateStore(store, result.res1.photo_manifest);
-    //Update store again with latest photos
-    updateStore(store, {photos: result.res2.photos});
-    //Update store once more with latest photo date
-    updateStore(store, {latestPhotoDate: result.date});
+    //Build Immutable store object
+    store = await Immutable.Map({
+        curiosity: result.curiosity,
+        spirit: result.spirit,
+        opportunity: result.opportunity
+    });
 
     //Render data
     render(App);
 };
 
+const getPhotos = async (rover) => {
+    //Save result of api call to result variable
+    const result = await fetch(`http://localhost:3000/photos?rover=${rover}`)
+    .then(res => res.json())
+
+    //Build Immutable photo object
+    photoObj = await Immutable.Map(result)
+
+};
+
+//Render app as soon as page loads
+render(App);
 //Initiate event listeners
 eventListeners();
-render(App);
+//Build store and photoObj as soon as page loads
+getInfo();
+getPhotos();
+

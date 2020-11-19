@@ -13,28 +13,54 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use("/", express.static(path.join(__dirname, "../public")));
 
-//API calls
+//API CALLS
+//Info route - make call to each rover end point and send back data in an object
 app.get("/info", async (req, res) => {
     //Make fetch request to Nasa api at the manifest end point
-    let result = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/${req.query.rover.toLowerCase()}?&api_key=${process.env.API_KEY}`)
+    const curiosity = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/curiosity?&api_key=${process.env.API_KEY}`)
     .then(res => res.json())
 
-    //Get latest photo date
-    const date = await result.photo_manifest.max_date;
-    
-    //Make second API call to find photos for the selected Rover with the latest date stored in the variable above
-    let result2 = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${req.query.rover}/photos?earth_date=${date}&api_key=${process.env.API_KEY}`)
+    const spirit = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/spirit?&api_key=${process.env.API_KEY}`)
     .then(res => res.json())
+
+    const opportunity = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/opportunity?&api_key=${process.env.API_KEY}`)
+    .then(res => res.json())
+
+    
 
     //Construct result object from the two api calls
     const resObj = await {
-        res1: result,
-        res2: result2,
-        date: date
+        curiosity,
+        spirit,
+        opportunity
     }
 
     //Send res object
     res.send(resObj);
+});
+
+//Photo route - make call to each rover end point and send back data in an object
+app.get("/photos", async (req, res) => {
+    //Make fetch request to Nasa api at the latest photo end point
+    const curiosity = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/latest_photos?&api_key=${process.env.API_KEY}`)
+    .then(res => res.json())
+
+    const spirit = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/latest_photos?&api_key=${process.env.API_KEY}`)
+    .then(res => res.json())
+
+    const opportunity = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/latest_photos?&api_key=${process.env.API_KEY}`)
+    .then(res => res.json())
+    
+
+    //Construct result object from the two api calls
+    const photoObj = {
+        curiosity,
+        spirit,
+        opportunity
+    };
+
+    //Send res object
+    res.send(photoObj);
 });
 
 //Start server
