@@ -26,17 +26,8 @@ app.get("/info", async (req, res) => {
     const opportunity = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/opportunity?&api_key=${process.env.API_KEY}`)
     .then(res => res.json())
 
-    
-
-    //Construct result object from the two api calls
-    const resObj = await {
-        curiosity,
-        spirit,
-        opportunity
-    }
-
-    //Send res object
-    res.send(resObj);
+    //Pass fetch results to getData function
+    await getData(res, curiosity, spirit, opportunity);
 });
 
 //Photo route - make call to each rover end point and send back data in an object
@@ -51,17 +42,22 @@ app.get("/photos", async (req, res) => {
     const opportunity = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/latest_photos?&api_key=${process.env.API_KEY}`)
     .then(res => res.json())
     
+    //Pass fetch results to getData function
+    await getData(res, curiosity, spirit, opportunity);
+});
 
-    //Construct result object from the two api calls
-    const photoObj = {
+//Extract api data
+const getData = (res, curiosity, spirit, opportunity) => {
+    //Build data object
+    const dataObj = {
         curiosity,
         spirit,
         opportunity
     };
 
-    //Send res object
-    res.send(photoObj);
-});
+    //Send result
+    res.send(dataObj);
+}
 
 //Start server
 app.listen(port, () => {
